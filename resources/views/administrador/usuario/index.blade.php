@@ -33,15 +33,20 @@
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->rol }}</td>
                             @if ($user->status === 1)
-                                <td><a class="btn btn-success" data-toggle="tooltip" data-placement="top"
-                                        title="Deshabilita al usuario"
-                                        href={{ route('cambiarEstado', ['id' => $user->id]) }}><i
-                                            class="fas fa-check"></i></a></td>
+                                <td>
+                                    <form name="{{ $user->nombre }}" class="formulario" method="GET"
+                                        action="{{ route('cambiarEstado', ['id' => $user->id]) }}">
+                                        <button type="submit" class="btn btn-success"><i class="fas fa-check"></i></button>
+                                    </form>
+                                </td>
                             @else
-                                <td><a class="btn btn-warning" data-toggle="tooltip" data-placement="top"
-                                        title="Habilita al usuario"
-                                        href={{ route('cambiarEstado', ['id' => $user->id]) }}><i
-                                            class="fas fa-ban"></i></a></td>
+                                <td>
+                                    <form name="{{ $user->nombre }}" class="formulario" method="GET"
+                                        action="{{ route('cambiarEstado', ['id' => $user->id]) }}">
+                                        <button type="submit" class="btn btn-warning"><i
+                                                class="fas fa-ban"></i></button>
+                                    </form>
+                                </td>
                             @endif
                         </tr>
                     @empty
@@ -52,10 +57,6 @@
 
                 </tbody>
             </table>
-
-
-
-
         </div>
     </div>
     @if ($users->links())
@@ -63,4 +64,27 @@
             {!! $users->links() !!}
         </div>
     @endif
+    <script>
+        const formularios = document.getElementsByClassName("formulario");
+
+        for (const form of formularios) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                Swal.fire({
+                    title: `Cambiar estado usuario ${form.getAttribute("name")}`,
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Save',
+                    denyButtonText: `Don't save`,
+                }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                        form.submit();
+                    } else if (result.isDenied) {
+                        Swal.fire('Changes are not saved', '', 'info')
+                    }
+                })
+            })
+        }
+    </script>
 @endsection
